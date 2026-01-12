@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackPoint Investments</title>
+<style>
+:root{
+  --bg:#0b0e12; --card:#0f1418; --muted:#9aa4b2; 
+  --accent:#2aa7ff; --danger:#ff6b4a; --glass:rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial,sans-serif;}
+header{background:#0f1720;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center;}
+.brand{font-weight:700;font-size:18px;}
+.signed{font-size:13px;color:var(--muted);}
+#loginWrap{height:100vh;display:flex;align-items:center;justify-content:center;}
+#loginBox{width:360px;background:var(--card);padding:26px;border-radius:12px;border:1px solid var(--glass);}
+input.field{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:12px;background:#0b1114;color:#fff;}
+.btn{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:#041018;font-weight:700;border:none;cursor:pointer;}
+.btn-red{background:var(--danger);color:#fff;}
+.wrap{max-width:1100px;margin:18px auto;padding:0 20px;display:none;}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:18px;}
+.card{background:linear-gradient(180deg,#0f1418,#0c0f12);padding:16px;border-radius:12px;border:1px solid var(--glass);}
+.balance{font-size:28px;font-weight:700;}
+.small{font-size:13px;color:var(--muted);}
+.menu-item{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;gap:12px;font-size:15;}
+.menu-item:hover{background:rgba(255,255,255,0.02);}
+.icon{width:18px;height:18px;opacity:0.85;}
+.sidepanel{position:fixed;right:-360px;top:0;height:100vh;width:360px;background:#0f1418;box-shadow:-12px 0 40px rgba(0,0,0,0.6);transition:right .28s ease;z-index:60;padding:18px;border-left:1px solid var(--glass);}
+.sidepanel.open{right:0;}
+.settings-bar{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:13px;border:1px solid rgba(255,255,255,0.02);}
+.history-list{max-height:280px;overflow:auto;margin-top:8px;}
+.hist-row{padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:8px;}
+.modal-backdrop{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:70;display:none;}
+.modal{background:#081018;padding:28px;border-radius:12px;border:1px solid var(--glass);text-align:center;color:#fff;width:360px;position:relative;}
+.modal .close-btn{position:absolute;top:12px;right:14px;font-size:20px;font-weight:bold;cursor:pointer;color:var(--muted);}
+.modal input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:none;background:#0b1114;color:#fff;}
+.modal .submit-btn{width:100%;padding:10px;background:var(--accent);border:none;border-radius:8px;color:#041018;font-weight:700;margin-top:10px;cursor:pointer;}
+.check{width:84px;height:84px;border-radius:50%;background:linear-gradient(180deg,#14b78b,#0ea5a2);display:flex;align-items:center;justify-content:center;margin:10px auto;}
+.check svg{width:48px;height:48px;stroke:#fff;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.forgot-pass{font-size:13px;color:var(--accent);cursor:pointer;text-align:right;margin-top:-6px;margin-bottom:12px;}
+.crypto-table{max-height:300px;overflow:auto;margin-top:12px;}
+.crypto-table table{width:100%;border-collapse:collapse;}
+.crypto-table th, .crypto-table td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.05);}
+.crypto-table th{color:var(--muted);}
+.anniversary{background:#11161c;padding:20px;border-radius:12px;margin-top:20px;text-align:center;line-height:1.4;}
+.activate-card-btn{width:100%;padding:14px;background:#14b78b;border:none;border-radius:12px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;margin-top:14px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">BlackPoint Investments</div>
+  <div class="signed">Signed in as <span id="signedUser">—</span></div>
+</header>
+
+<div id="loginWrap">
+  <div id="loginBox">
+    <h2>Account Login</h2>
+    <input id="username" class="field" placeholder="Username">
+    <input id="password" class="field" type="password" placeholder="Password">
+    <div class="forgot-pass" onclick="forgotPassword()">Forgot Password?</div>
+    <button class="btn" onclick="login()">Login</button>
+  </div>
+</div>
+
+<main class="wrap" id="dashboard">
+<div class="grid">
+<div>
+<div class="card">
+  <div style="display:flex;justify-content:space-between">
+    <div>
+      <div class="small">Investment Balance</div>
+      <div class="balance" id="balanceDisplay">$150,000</div>
+    </div>
+    <div style="text-align:right">
+      <div class="small">24h BTC</div>
+      <div id="btcChange" class="small">—</div>
+    </div>
+  </div>
+  <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div class="small">BTC</div>
+      <div style="font-weight:700" id="btcPrice">$—</div>
+    </div>
+    <div class="settings-bar" id="openPanelBtn">☰ Menu</div>
+  </div>
+  <button class="activate-card-btn" onclick="activateCard()">Activate Your Card</button>
+</div>
+
+<div class="card crypto-table">
+<h3 style="margin:0 0 8px">Top Cryptocurrencies</h3>
+<table>
+<thead><tr><th>Coin</th><th>Price</th><th>24h</th></tr></thead>
+<tbody id="marketTable"><tr><td>Loading...</td></tr></tbody>
+</table>
+</div>
+
+<div class="anniversary">
+  <h3>🎉 4-Year Anniversary 🎉</h3>
+  <p>Thank you for being with BlackPoint Investments for 4 years. We're committed to helping you grow your investments with confidence and transparency.</p>
+</div>
+
+</div>
+
+<aside>
+<div class="card">
+<h3 style="margin:0 0 8px">Bitcoin</h3>
+<div class="small">Current price</div>
+<div style="font-size:20px;font-weight:700;margin-top:8px" id="btcPriceAside">$—</div>
+<div class="small" style="margin-top:10px">Last updated: <span id="lastUpdated">—</span></div>
+</div>
+</aside>
+</div>
+</main>
+
+<div class="sidepanel" id="sidepanel">
+<h3>Menu</h3>
+<div class="menu-item" onclick="goHome()">🏠 Home</div>
+<div class="menu-item" onclick="showAccountInfo()">👤 Account Info</div>
+<div class="menu-item" onclick="showSupport()">💬 Support</div>
+<div class="menu-item" onclick="showSettings()">⚙️ Settings</div>
+<button class="btn" style="margin-top:10px" onclick="logout()">Logout</button>
+<div id="panelContent" style="margin-top:14px"></div>
+</div>
+
+<script>
+const USERNAME='Mrphilip40', PASSWORD='221212', START_BAL=150000;
+let balance=START_BAL;
+
+function login(){
+  const u=document.getElementById('username').value.trim();
+  const p=document.getElementById('password').value.trim();
+  if(u===USERNAME && p===PASSWORD){
+    localStorage.setItem('bp_logged_in','1');
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    document.getElementById('signedUser').innerText=USERNAME;
+    loadMarket();
+  } else alert('Invalid username or password');
+}
+
+function forgotPassword(){alert('Password reminder: 221212');}
+
+window.onload=()=>{
+  if(localStorage.getItem('bp_logged_in')==='1'){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    document.getElementById('signedUser').innerText=USERNAME;
+    loadMarket();
+  }
+}
+
+function logout(){localStorage.removeItem('bp_logged_in'); location.reload();}
+function formatUSD(n){return '$'+Number(n).toLocaleString();}
+function nowISO(){return new Date().toLocaleString();}
+
+async function loadMarket(){
+  try{
+    const coins=['bitcoin','ethereum'];
+    const res=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=usd&include_24hr_change=true`);
+    const data=await res.json();
+    const btc=data.bitcoin.usd, ch=data.bitcoin.usd_24h_change;
+    document.getElementById('btcPrice').innerText=formatUSD(btc);
+    document.getElementById('btcPriceAside').innerText=formatUSD(btc);
+    document.getElementById('btcChange').innerText=(ch>=0?'+':'')+ch.toFixed(2)+'%';
+    document.getElementById('btcChange').style.color=ch>=0?'#16a34a':'#ff6b6b';
+    document.getElementById('lastUpdated').innerText=nowISO();
+  } catch(e){console.log('Market load error', e);}
+}
+
+function goHome(){document.getElementById('panelContent').innerHTML=''}
+function showAccountInfo(){document.getElementById('panelContent').innerHTML=`<h4>Account Info</h4><div class='small'>Username: ${USERNAME}</div><div class='small'>Balance: ${formatUSD(balance)}</div>`}
+function showSupport(){document.getElementById('panelContent').innerHTML='<h4>Support</h4><div class="small">Contact your advisor.</div>'}
+function showSettings(){document.getElementById('panelContent').innerHTML='<h4>Settings</h4><div class="small">No settings available in demo.</div>'}
+
+document.getElementById('openPanelBtn').onclick=()=>document.getElementById('sidepanel').classList.add('open');
+document.addEventListener('click',e=>{if(!document.getElementById('sidepanel').contains(e.target)&&e.target.id!=='openPanelBtn'){document.getElementById('sidepanel').classList.remove('open')}});
+
+function activateCard(){alert('Your card is ready to be activated!');}
+</script>
+
+</body>
+</html>
